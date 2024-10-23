@@ -1,11 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct {
-  char tipoNave[30];
-  int prioridade;
-} regNave;
-
+/* --------------- ESTRUTURA DE DADOS --------------- */
 typedef struct {
   int codigo;
   char servico[40];
@@ -13,75 +9,95 @@ typedef struct {
   float custo;
 } regServicos;
 
-/* --------------- FILA --------------- 
-
-A fila é considerada vazia quando meu inicio é igual ao final da fila, ou seja, i = f -> queue is NULL
-Se ela é igual ao FMax ela está cheia, neste caso devemos realocar memoria para caber todos as naves.
-
-// como iniciar uma fila
-int i , f ;
-nave F[MAX] ;
-i = 0;
-f = 0;
-
---------------- FILA --------------- */
-
 typedef struct {
-  regNave nave;
-  int prioridadeTemp;
-  int tempoEspera; /* Tempo Estacionado na Estação*/
-  int tempoServico; /* Tempo Previsto para Manutenção */
+  char tipoNave[30];
+  int prioridade;
+} regTipoNave;
+
+/* Estrutura para representar uma nave */
+typedef struct {
+  int nin;
+  char tipoNave[30];
+  int *servicoSolicitado;
+  int totalServicos;
+  int tempoEspera;
+  float custoTotal;
+} naves;
+
+/* Estrutura para a fila de espera */
+typedef struct {
+  naves *naves;
+  int tMaxFila;
+  int inicio;
+  int fim;
 } filaEspera;
 
+/* Função para inicializar a fila */
+void inicializarFila(filaEspera *fila, int capacidade) {
+  fila->naves = (naves *)malloc(capacidade * sizeof(naves));
+  fila->tMaxFila = capacidade;
+  fila->inicio = 0;
+  fila->fim = 0;
+}
 
-
-
-
-
-
-
-
-
-
-
+/* Função principal */
 int main() {
 
   int tMin, dMin, tempoPrioridade, qntTipoServico, qntTipoNave, i;
   /*
-  - tMIn é o tempo que a nave está na estação;
+  - tMin é o tempo que a nave está na estação;
   - dMin é o tempo de descanso da equipe para iniciar a próxima manutenção;
   */
 
   regServicos *servico;
-  regNave *nave;
+  regTipoNave *nave;
 
-  FILE *entrada;
-  entrada = fopen("entrada.txt", "r");
+  FILE *entrada = fopen("entrada.txt", "r");
+  if (entrada == NULL) {
+    printf("Erro ao abrir o arquivo de entrada.\n");
+    return 1;
+  }
+
   /* ******** Dados Padrão ******** */
-
   fscanf(entrada, "%d", &tempoPrioridade);
   fscanf(entrada, "%d", &dMin);
   fscanf(entrada, "%d", &qntTipoServico);
 
+  /* Alocação de memória para os serviços */
   servico = (regServicos *)malloc(qntTipoServico * sizeof(regServicos));
+  if (servico == NULL) {
+    printf("Erro ao alocar memória para os serviços.\n");
+    fclose(entrada);
+    return 1;
+  }
 
-  /* ******** Entrada dos Serviços *********/
+  /* ******** Entrada dos Serviços ******** */
   for (i = 0; i < qntTipoServico; i++) {
-    fscanf(entrada, "%d %s %d %f", &servico[i].codigo, servico[i].servico,
-           &servico[i].previsaoMin, &servico[i].custo);
+    fscanf(entrada, "%d %s %d %f", &servico[i].codigo, servico[i].servico, &servico[i].previsaoMin, &servico[i].custo);
   }
   /* ------- Entrada dos Serviços ------- */
 
   fscanf(entrada, "%d", &qntTipoNave);
 
-  /* ******** Tipos de Nave *********/
-  nave = (regNave *)malloc(qntTipoNave * sizeof(regNave));
+  /* Alocação de memória para os tipos de nave */
+  nave = (regTipoNave *)malloc(qntTipoNave * sizeof(regTipoNave));
+  if (nave == NULL) {
+    printf("Erro ao alocar memória para os tipos de nave.\n");
+    free(servico);
+    fclose(entrada);
+    return 1;
+  }
+
+  /* ******** Entrada dos Tipos de Nave ******** */
   for (i = 0; i < qntTipoNave; i++) {
     fscanf(entrada, "%s %d", nave[i].tipoNave, &nave[i].prioridade);
   }
-  /* ------- Tipos de Nave ------- */
+  /* ------- Entrada dos Tipos de Nave ------- */
 
-  /* ******** Tipos de Nave ******** */
+  /* Liberação de memória e fechamento do arquivo */
+  free(servico);
+  free(nave);
+  fclose(entrada);
 
   return 0;
 }
