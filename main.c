@@ -37,6 +37,35 @@ typedef struct {
 
 
 
+/* -------------------- FUNÇÕES -------------------- */
+
+/*
+  Funções que preciso fazer:
+    - ordenar fila;
+    - aumentar a prioridade das naves conforme o tempo;
+    - operaçoes do arquivo de simulaçao;
+*/
+
+void simulaAtendimento ( int minAvancar ){ /* -> parâmetro S <- */
+
+};
+
+void realizaServico ( int codNave, int codServico, naves* nave ){ /* -> parâmetro N <- */
+
+};
+
+void geraRelatorio (  ) { /* -> parâmetro R <- */
+
+};
+
+void esvaziaFila (  ) { /* -> parâmetro X <- */
+  
+};
+
+/* -------------------- FUNÇÕES -------------------- */
+
+
+
 int main() {
   int tMin, dMin, tempoPrioridade, qntTipoServico, qntTipoNave;
   int i;
