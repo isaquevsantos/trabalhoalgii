@@ -154,3 +154,9 @@ int main() {
 
   return 0;
 }
+
+if (prioridadeA > prioridadeB ){
+  fazer A
+} else if (quantidadeManutencaoA > quantidadeManutencaoB) {
+
+} else if ( tempode estacao )
