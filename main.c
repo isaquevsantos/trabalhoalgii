@@ -24,7 +24,6 @@ typedef struct {
   int prioridade;
 } regTipoNave;
 
-/* Estrutura para representar uma nave */
 typedef struct {
   int nin;
   char tipoNave[30];
@@ -32,13 +31,44 @@ typedef struct {
   int totalServicos;
   int tempoEspera;
   float custoTotal;
-  int prioridade; // Campo adicionado para a prioridade
+  int prioridade;
 } naves;
 /* --------------- ESTRUTURA DE DADOS --------------- */
 
+
 /* -------------------- FUNÇÕES -------------------- */
 
+/*
+  Funções que preciso fazer:
+    - ordenar fila; Complete 26/10
+    - aumentar a prioridade das naves conforme o tempo;
+    - operaçoes do arquivo de simulaçao;
+*/
+
+
+void simulaAtendimento ( int minAvancar ){
+  /* -> parâmetro S <- */
+};
+void realizaServico ( int codNave, int codServico, naves* nave ){
+  /* -> parâmetro N <- */
+};
+void geraRelatorio (  ) {
+  /* -> parâmetro R <- */
+};
+void esvaziaFila (  ) {
+  /* -> parâmetro X <- */
+};
+
+
 /* Função para ordenar a fila de naves */
+
+/*
+    PRIORIDADE 
+    1° TIPO ->  QUANTO MENOR, MAIOR A PRIORIDADE
+    2° TEMPO DE SERVIÇO -> QUANTO MAIOR, MAIOR A PRIORIDADE
+    3° TEMPO DE ESTAÇÃO -> QUANTO MAIOR, MAIOR A PRIORIDADE
+*/
+
 void ordenarFila(naves *nave, int qntNaves) {
   int i, j;
   naves temp;
@@ -48,25 +78,22 @@ void ordenarFila(naves *nave, int qntNaves) {
       int prioridadeA = nave[i].prioridade;
       int prioridadeB = nave[j].prioridade;
 
-      // Ordenação por prioridade
+      /* Primeiro por prioridade */
       if (prioridadeA > prioridadeB) {
-        // Troca as posições das naves na fila
         temp = nave[i];
         nave[i] = nave[j];
         nave[j] = temp;
       }
       else if (prioridadeA == prioridadeB) {
-        // Caso as prioridades sejam iguais, considerar a quantidade de manutenção
+        /* Segundo pela quantidade de manutenção */
         if (nave[i].totalServicos < nave[j].totalServicos) {
-          // Troca as posições caso a nave[j] tenha mais serviços solicitados
           temp = nave[i];
           nave[i] = nave[j];
           nave[j] = temp;
         }
         else if (nave[i].totalServicos == nave[j].totalServicos) {
-          // Se ainda empatar, considerar o tempo de espera
+          /* Terceira pelo tempo de espera */
           if (nave[i].tempoEspera < nave[j].tempoEspera) {
-            // Trocar as posições caso a nave[j] tenha maior tempo de espera
             temp = nave[i];
             nave[i] = nave[j];
             nave[j] = temp;
@@ -81,9 +108,7 @@ void ordenarFila(naves *nave, int qntNaves) {
 void exibirFila(naves *nave, int qntNaves) {
   printf("\nFila de Naves Ordenada:\n");
   for (int i = 0; i < qntNaves; i++) {
-    printf("NIN: %d, Tipo: %s, Prioridade: %d, Total de Serviços: %d, Tempo de Espera: %d, Custo Total: %.2f\n",
-           nave[i].nin, nave[i].tipoNave, nave[i].prioridade, nave[i].totalServicos,
-           nave[i].tempoEspera, nave[i].custoTotal);
+    printf("NIN: %d, Tipo: %s, Prioridade: %d, Total de Serviços: %d, Tempo de Espera: %d, Custo Total: %.2f\n", nave[i].nin, nave[i].tipoNave, nave[i].prioridade, nave[i].totalServicos, nave[i].tempoEspera, nave[i].custoTotal);
   }
 }
 
@@ -98,7 +123,6 @@ int main() {
   naves *nave;
   int qntNaves = 0;
 
-  /* Abertura do arquivo de entrada */
   FILE *entrada = fopen("entrada.txt", "r");
   if (entrada == NULL) {
     return 1;
@@ -140,7 +164,10 @@ int main() {
     fscanf(entrada, "%s %d", tipoNave[i].tipoNave, &tipoNave[i].prioridade);
   }
 
+
+
   /* ******** Leitura das Naves Dinamicamente ******** */
+
   nave = NULL;
   int nin;
   char tipo[30];
@@ -170,11 +197,9 @@ int main() {
   }
   /* ******** Leitura das Naves Dinamicamente ******** */
 
-  /* Ordenar a fila de naves */
-  ordenarFila(nave, qntNaves);
-
-  /* Exibir a fila ordenada */
+  /* Exibir a fila -> Usada para testes  
   exibirFila(nave, qntNaves);
+  /* Exibir a fila -> Usada para testes */
 
   /* Fechamento do arquivo */
   fclose(entrada);
