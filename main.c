@@ -46,8 +46,35 @@ typedef struct {
 */
 
 
-void simulaAtendimento ( int minAvancar ){
+void simulaAtendimento ( int minAvancar, naves *nave, int qntNaves, int *tempoRestante, regServicos *servicos, int qntServicos){
   /* -> parâmetro S <- */
+  /*Sempre ao iniciar ele vai ordenar a fila*/
+  ordenarFila( nave, qntNaves);
+
+  /*OBS AINDA FALTA CONSIDERAR O TEMPO DE DESCANSO DOS FUNCIONARIOS*/
+
+  int tempoDisponivel = minAvancar + *tempoRestante;
+  
+  for (int i = 0; i < qntNaves && tempoDisponivel > 0; i++) {
+    if (nave[i].totalServicos > 0) {  // Verifica se há serviços pendentes
+      int codServico = nave[i].servicoSolicitado[0];
+      int servicoTempo = servicos[codServico].previsaoMin;
+
+      if (servicoTempo <= tempoDisponivel) {
+        // Serviço completo
+        tempoDisponivel -= servicoTempo;
+        nave[i].totalServicos--;  // Serviço realizado
+        nave[i].servicoSolicitado++;  // Avança para o próximo serviço
+        nave[i].custoTotal += servicos[codServico].custo;  // Acumula o custo do serviço
+      } else {
+        // Serviço incompleto
+        servicos[codServico].previsaoMin -= tempoDisponivel;
+        tempoDisponivel = 0;
+      }
+    }
+  }
+
+  *tempoRestante = tempoDisponivel;
 };
 void realizaServico ( int codNave, int codServico, naves* nave ){
   /* -> parâmetro N <- */
@@ -115,7 +142,7 @@ void exibirFila(naves *nave, int qntNaves) {
 /* -------------------- FUNÇÕES -------------------- */
 
 int main() {
-  int tMin, dMin, tempoPrioridade, qntTipoServico, qntTipoNave;
+  int tMin, dMin, tempoPrioridade, qntTipoServico, qntTipoNave, *tempoRestanteSimulacao = 0 ;
   int i;
 
   regServicos *servico;
