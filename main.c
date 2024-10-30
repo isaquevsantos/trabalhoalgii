@@ -45,40 +45,32 @@ typedef struct {
     - operaçoes do arquivo de simulaçao;
 */
 
+void solicitaServico ( int codNave, int codServico, naves* nave, int qntNaves, int *tempoPassado){
 
-void simulaAtendimento ( int minAvancar, naves *nave, int qntNaves, int *tempoRestante, regServicos *servicos, int qntServicos){
-  /* -> parâmetro S <- */
-  /*Sempre ao iniciar ele vai ordenar a fila*/
-  ordenarFila( nave, qntNaves);
+  int i, j;
 
-  /*OBS AINDA FALTA CONSIDERAR O TEMPO DE DESCANSO DOS FUNCIONARIOS*/
+  FILE *simulacao = fopen("simulacao.cmd", "r");
+  if (simulacao == NULL) {
+    return;
+  }
 
-  int tempoDisponivel = minAvancar + *tempoRestante;
-  
-  for (int i = 0; i < qntNaves && tempoDisponivel > 0; i++) {
-    if (nave[i].totalServicos > 0) {  // Verifica se há serviços pendentes
-      int codServico = nave[i].servicoSolicitado[0];
-      int servicoTempo = servicos[codServico].previsaoMin;
-
-      if (servicoTempo <= tempoDisponivel) {
-        // Serviço completo
-        tempoDisponivel -= servicoTempo;
-        nave[i].totalServicos--;  // Serviço realizado
-        nave[i].servicoSolicitado++;  // Avança para o próximo serviço
-        nave[i].custoTotal += servicos[codServico].custo;  // Acumula o custo do serviço
-      } else {
-        // Serviço incompleto
-        servicos[codServico].previsaoMin -= tempoDisponivel;
-        tempoDisponivel = 0;
-      }
+  for (i = 0; i < qntNaves - 1; i++) {
+    if (nave[i].nin == codNave)
+    {
+      nave[i].servicoSolicitado = (int *) realloc(nave[i].servicoSolicitado, (nave[i].totalServicos + 1) * sizeof(int));
+      nave[i].servicoSolicitado[nave[i].totalServicos] = codServico;
+      nave[i].totalServicos += 1;
+    }
+    else {
+      printf("NAVE NÃO ENCONTRADA!");
     }
   }
 
-  *tempoRestante = tempoDisponivel;
+  fclose(simulacao);
 };
-void realizaServico ( int codNave, int codServico, naves* nave ){
-  /* -> parâmetro N <- */
-};
+
+
+
 void geraRelatorio (  ) {
   /* -> parâmetro R <- */
 };
@@ -86,15 +78,6 @@ void esvaziaFila (  ) {
   /* -> parâmetro X <- */
 };
 
-
-/* Função para ordenar a fila de naves */
-
-/*
-    PRIORIDADE 
-    1° TIPO ->  QUANTO MENOR, MAIOR A PRIORIDADE
-    2° TEMPO DE SERVIÇO -> QUANTO MAIOR, MAIOR A PRIORIDADE
-    3° TEMPO DE ESTAÇÃO -> QUANTO MAIOR, MAIOR A PRIORIDADE
-*/
 
 void ordenarFila(naves *nave, int qntNaves) {
   int i, j;
@@ -112,7 +95,6 @@ void ordenarFila(naves *nave, int qntNaves) {
         nave[j] = temp;
       }
       else if (prioridadeA == prioridadeB) {
-        /* Segundo pela quantidade de manutenção */
         if (nave[i].totalServicos < nave[j].totalServicos) {
           temp = nave[i];
           nave[i] = nave[j];
@@ -144,6 +126,7 @@ void exibirFila(naves *nave, int qntNaves) {
 int main() {
   int tMin, dMin, tempoPrioridade, qntTipoServico, qntTipoNave, *tempoRestanteSimulacao = 0 ;
   int i;
+  int *tempoPassado; 
 
   regServicos *servico;
   regTipoNave *tipoNave;
