@@ -12,22 +12,25 @@
 #include <string.h>
 
 /* --------------- ESTRUTURA DE DADOS --------------- */
-typedef struct {
+typedef struct
+{
   int codigo;
   char servico[40];
   int previsaoMin;
   float custo;
 } regServicos;
 
-typedef struct {
+typedef struct
+{
   char tipoNave[30];
   int prioridade;
 } regTipoNave;
 
-typedef struct {
+typedef struct
+{
   int nin;
   char tipoNave[30];
-  int* servicoSolicitado;
+  int *servicoSolicitado;
   int totalServicos;
   int tempoEspera;
   float custoTotal;
@@ -44,18 +47,23 @@ typedef struct {
     - operaçoes do arquivo de simulaçao;
 */
 
-void solicitaServico(int codNave, int codServico, int previsaoMin, naves *nave, int qntNaves) {
-  for (int i = 0; i < qntNaves; i++) {
-    if (nave[i].nin == codNave) {
+void solicitaServico(int codNave, int codServico, int previsaoMin, naves *nave, int qntNaves)
+{
+  for (int i = 0; i < qntNaves; i++)
+  {
+    if (nave[i].nin == codNave)
+    {
       nave[i].servicoSolicitado = (int *)realloc(nave[i].servicoSolicitado, (nave[i].totalServicos + 1) * sizeof(int));
-      if (nave[i].servicoSolicitado == NULL) {
+      if (nave[i].servicoSolicitado == NULL)
+      {
         return;
       }
 
       nave[i].servicoSolicitado[nave[i].totalServicos] = codServico;
       nave[i].totalServicos += 1;
 
-      for (int j = nave[i].totalServicos - 1; j > 0 && nave[i].servicoSolicitado[j - 1] > previsaoMin; j--) {
+      for (int j = nave[i].totalServicos - 1; j > 0 && nave[i].servicoSolicitado[j - 1] > previsaoMin; j--)
+      {
         int temp = nave[i].servicoSolicitado[j];
         nave[i].servicoSolicitado[j] = nave[i].servicoSolicitado[j - 1];
         nave[i].servicoSolicitado[j - 1] = temp;
@@ -66,37 +74,86 @@ void solicitaServico(int codNave, int codServico, int previsaoMin, naves *nave, 
   printf("Nave %d não encontrada!\n", codNave);
 }
 
-void simula(int tempoSimulacao) {}
+void simula(int tempoSimulacao, int *tempoRestanteSimulacao, naves *nave, regServicos *servicos, int qntNaves, int qntServicos)
+{
+  ordenarFila(nave, qntNaves);
 
-void geraRelatorio(){
-    /* -> parâmetro R <- */
+  for (int i = 0; i < qntNaves; i++)
+  {
+    if (nave[i].totalServicos == 0)
+    {
+      continue;
+    }
+
+    for (int j = 0; j < nave[i].totalServicos; j++)
+    {
+      int codServico = nave[i].servicoSolicitado[j];
+
+      int tempoPrevisto = 0;
+      for (int k = 0; k < qntServicos; k++)
+      {
+        if (servicos[k].codigo == codServico)
+        {
+          tempoPrevisto = servicos[k].previsaoMin;
+          break; /*para ter certeza que vai parar*/
+        }
+      }
+
+      /* Condição Principal da função */
+      if (tempoSimulacao >= tempoPrevisto)
+      {
+        tempoSimulacao -= tempoPrevisto;
+        nave[i].tempoEspera += tempoPrevisto;
+      }
+      else
+      {
+        *tempoRestanteSimulacao += tempoPrevisto - tempoSimulacao;
+        tempoSimulacao = 0;
+        return;
+      }
+    }
+  }
+}
+
+void geraRelatorio() {
+  /* -> parâmetro R <- */
 };
-void esvaziaFila(){
-    /* -> parâmetro X <- */
+void esvaziaFila() {
+  /* -> parâmetro X <- */
 };
 
-void ordenarFila(naves *nave, int qntNaves) {
+void ordenarFila(naves *nave, int qntNaves)
+{
   int i, j;
   naves temp;
 
-  for (i = 0; i < qntNaves - 1; i++) {
-    for (j = i + 1; j < qntNaves; j++) {
+  for (i = 0; i < qntNaves - 1; i++)
+  {
+    for (j = i + 1; j < qntNaves; j++)
+    {
       int prioridadeA = nave[i].prioridade;
       int prioridadeB = nave[j].prioridade;
 
       /* Primeiro por prioridade */
-      if (prioridadeA > prioridadeB) {
+      if (prioridadeA > prioridadeB)
+      {
         temp = nave[i];
         nave[i] = nave[j];
         nave[j] = temp;
-      } else if (prioridadeA == prioridadeB) {
-        if (nave[i].totalServicos < nave[j].totalServicos) {
+      }
+      else if (prioridadeA == prioridadeB)
+      {
+        if (nave[i].totalServicos < nave[j].totalServicos)
+        {
           temp = nave[i];
           nave[i] = nave[j];
           nave[j] = temp;
-        } else if (nave[i].totalServicos == nave[j].totalServicos) {
+        }
+        else if (nave[i].totalServicos == nave[j].totalServicos)
+        {
           /* Terceira pelo tempo de espera */
-          if (nave[i].tempoEspera < nave[j].tempoEspera) {
+          if (nave[i].tempoEspera < nave[j].tempoEspera)
+          {
             temp = nave[i];
             nave[i] = nave[j];
             nave[j] = temp;
@@ -107,7 +164,7 @@ void ordenarFila(naves *nave, int qntNaves) {
   }
 }
 
-/* Função para exibir a fila de naves 
+/* Função para exibir a fila de naves
 
 USADA PARA TESTES
 
@@ -124,11 +181,11 @@ void exibirFila(naves *nave, int qntNaves) {
 
 /* -------------------- FUNÇÕES -------------------- */
 
-int main() {
+int main()
+{
   int tMin, dMin, tempoPrioridade, qntTipoServico, qntTipoNave,
       *tempoRestanteSimulacao = 0;
   int i;
-  int *tempoPassado;
 
   regServicos *servico;
   regTipoNave *tipoNave;
@@ -136,7 +193,8 @@ int main() {
   int qntNaves = 0;
 
   FILE *entrada = fopen("entrada.txt", "r");
-  if (entrada == NULL) {
+  if (entrada == NULL)
+  {
     return 1;
   }
 
@@ -151,13 +209,15 @@ int main() {
 
   /* Alocação de memória para os serviços */
   servico = (regServicos *)malloc(qntTipoServico * sizeof(regServicos));
-  if (servico == NULL) {
+  if (servico == NULL)
+  {
     fclose(entrada);
     return 1;
   }
 
   /* ******** Entrada dos Serviços ******** */
-  for (i = 0; i < qntTipoServico; i++) {
+  for (i = 0; i < qntTipoServico; i++)
+  {
     fscanf(entrada, "%d %s %d %f", &servico[i].codigo, servico[i].servico,
            &servico[i].previsaoMin, &servico[i].custo);
   }
@@ -166,14 +226,16 @@ int main() {
 
   /* Alocação de memória para os tipos de nave */
   tipoNave = (regTipoNave *)malloc(qntTipoNave * sizeof(regTipoNave));
-  if (tipoNave == NULL) {
+  if (tipoNave == NULL)
+  {
     free(servico);
     fclose(entrada);
     return 1;
   }
 
   /* ******** Entrada dos Tipos de Nave ******** */
-  for (i = 0; i < qntTipoNave; i++) {
+  for (i = 0; i < qntTipoNave; i++)
+  {
     fscanf(entrada, "%s %d", tipoNave[i].tipoNave, &tipoNave[i].prioridade);
   }
 
@@ -182,9 +244,11 @@ int main() {
   nave = NULL;
   int nin;
   char tipo[30];
-  while (fscanf(entrada, "%d %s", &nin, tipo) == 2) {
+  while (fscanf(entrada, "%d %s", &nin, tipo) == 2)
+  {
     nave = (naves *)realloc(nave, (qntNaves + 1) * sizeof(naves));
-    if (nave == NULL) {
+    if (nave == NULL)
+    {
       free(servico);
       free(tipoNave);
       fclose(entrada);
@@ -198,8 +262,10 @@ int main() {
     nave[qntNaves].custoTotal = 0.0;
 
     // Encontrar a prioridade da nave com base no tipo
-    for (int j = 0; j < qntTipoNave; j++) {
-      if (strcmp(tipoNave[j].tipoNave, tipo) == 0) {
+    for (int j = 0; j < qntTipoNave; j++)
+    {
+      if (strcmp(tipoNave[j].tipoNave, tipo) == 0)
+      {
         nave[qntNaves].prioridade = tipoNave[j].prioridade;
         break;
       }
@@ -212,7 +278,6 @@ int main() {
   /* Exibir a fila -> Usada para testes
   exibirFila(nave, qntNaves);
   /* Exibir a fila -> Usada para testes */
-
 
   /* Fechamento do arquivo */
   fclose(entrada);
