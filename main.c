@@ -74,45 +74,40 @@ void solicitaServico(int codNave, int codServico, int previsaoMin, naves *nave, 
   printf("Nave %d não encontrada!\n", codNave);
 }
 
-void simula(int tempoSimulacao, int *tempoRestanteSimulacao, naves *nave, regServicos *servicos, int qntNaves, int qntServicos)
-{
-  ordenarFila(nave, qntNaves);
+void simula(int tempoSimulacao, int *tempoRestanteSimulacao, naves *nave, regServicos *servicos, int qntNaves, int qntServicos) {
+  ordenarFila(nave, qntNaves); 
 
-  for (int i = 0; i < qntNaves; i++)
-  {
-    if (nave[i].totalServicos == 0)
-    {
-      continue;
-    }
+  tempoSimulacao += *tempoRestanteSimulacao;
 
-    for (int j = 0; j < nave[i].totalServicos; j++)
-    {
+  for (int i = 0; i < qntNaves; i++) {
+    if (nave[i].totalServicos == 0) continue;
+
+    for (int j = 0; j < nave[i].totalServicos; j++) {
       int codServico = nave[i].servicoSolicitado[j];
 
+
       int tempoPrevisto = 0;
-      for (int k = 0; k < qntServicos; k++)
-      {
-        if (servicos[k].codigo == codServico)
-        {
+      for (int k = 0; k < qntServicos; k++) {
+        if (servicos[k].codigo == codServico) {
           tempoPrevisto = servicos[k].previsaoMin;
-          break; /*para ter certeza que vai parar*/
+          break;
         }
       }
 
-      /* Condição Principal da função */
-      if (tempoSimulacao >= tempoPrevisto)
-      {
+
+      if (tempoSimulacao >= tempoPrevisto) {
         tempoSimulacao -= tempoPrevisto;
         nave[i].tempoEspera += tempoPrevisto;
-      }
-      else
-      {
-        *tempoRestanteSimulacao += tempoPrevisto - tempoSimulacao;
-        tempoSimulacao = 0;
+      } else {
+        *tempoRestanteSimulacao = tempoSimulacao - tempoPrevisto;
         return;
       }
     }
   }
+
+  *tempoRestanteSimulacao = tempoSimulacao;
+
+  // ainda falta colocar a remoção do serviço e a realocação do carro na fila 
 }
 
 void geraRelatorio() {
