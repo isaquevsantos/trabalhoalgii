@@ -107,7 +107,10 @@ void ordenarFila(naves *nave, int qntNaves) {
   }
 }
 
-/* Função para exibir a fila de naves */
+/* Função para exibir a fila de naves 
+
+USADA PARA TESTES
+
 void exibirFila(naves *nave, int qntNaves) {
   printf("\nFila de Naves Ordenada:\n");
   for (int i = 0; i < qntNaves; i++) {
@@ -117,6 +120,7 @@ void exibirFila(naves *nave, int qntNaves) {
            nave[i].totalServicos, nave[i].tempoEspera, nave[i].custoTotal);
   }
 }
+*/
 
 /* -------------------- FUNÇÕES -------------------- */
 
@@ -202,11 +206,13 @@ int main() {
     }
     qntNaves++;
   }
+
   /* ******** Leitura das Naves Dinamicamente ******** */
 
   /* Exibir a fila -> Usada para testes
   exibirFila(nave, qntNaves);
   /* Exibir a fila -> Usada para testes */
+
 
   /* Fechamento do arquivo */
   fclose(entrada);
