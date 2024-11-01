@@ -229,3 +229,11 @@
 
 //   return 0;
 // }
+
+
+
+// if (tipoRelatorio == 1) {
+//                 geraRelatorio(1, nave, qntNaves, totalNavesAtendidas, totalServicosRealizados, valorRecebido, minutosSimulados);
+//             } else if (tipoRelatorio == 2) {
+//                 geraRelatorioPendentes(nave, qntNaves, minutosSimulados);
+//             }
