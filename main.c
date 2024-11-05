@@ -166,7 +166,7 @@ void simula(int tempoSimulacao, int *tempoRestanteSimulacao, naves *nave, regSer
     *tempoRestanteSimulacao = tempoSimulacao;
 }
 
-void geraRelatorio(int parametro, naves *nave, int qntNaves, int totalNavesAtendidas, int totalServicosRealizados, float valorRecebido, int minutosSimulados) {
+void geraRelatorio(naves *nave, int qntNaves, int totalNavesAtendidas, int totalServicosRealizados, float *valorRecebido, int minutosSimulados) {
     printf("Relatório de Naves Atendidas:\n");
     printf("NIN\tTipo\tQtd Serviços\tCusto Total\n");
     ordenarFilaPorNIN(nave, qntNaves);
@@ -281,40 +281,77 @@ int main() {
     regServicos *servicos = NULL;
     regTipoNave *tipoNave = NULL;
     naves *nave = NULL;
+    char comando;
+
+    int *tempoRestanteSimulacao;
+    int *totalNavesAtendidas, *totalServicosRealizados, *minutosSimulados;
+    float *valorRecebido;
+
+    int codNave, temp;
+    char temp;
+    int codServico;
+    int minSimula;
 
     lerArquivoConfiguracao("entrada.txt", &tempoPrioridade, &dMin, &servicos, &qntTipoServico, &tipoNave, &qntTipoNave, &nave, &qntNaves);
 
     // Aqui é possível chamar as demais funções, como `simula`, etc.
 
-    FILE *entrada = fopen("simulacao.cmd", "r");
-    if (entrada == NULL) {
-        printf("Erro ao abrir o arquivo de entrada!\n");
-        return 1;
-    }
+    FILE *simulacao = fopen("simulacao.cmd", "r");
+    while (simulacao != NULL) {
 
-    switch (expression)
-    {
-    case n:
-        /* code */
-        break;
-    case s:
-        /* code */
-        break;
-    case r:
-        /* code */
-        break;
-    case x:
-        /* code */
-        break;
-    
-    default:
-        break;
+        fscanf(simulacao, "%s", comando);
+        switch (comando)
+        {
+        case 'n':
+
+            fscanf(simulacao, "%d", codNave);
+            fscanf(simulacao, "%s", temp);
+            fscanf(simulacao, "%d", codServico);
+
+            solicitaServico(codNave, codServico, servicos[codServico].previsaoMin, nave, qntNaves);
+
+            break;
+        case 's':
+            
+            fscanf(simulacao, "%d", minSimula);
+
+            simula(minSimula, tempoRestanteSimulacao, nave, servicos, qntNaves, nave->totalServicos, totalNavesAtendidas, totalServicosRealizados, valorRecebido, minutosSimulados);
+
+            break;
+        case 'r':
+            
+            fscanf(simulacao, "%d", temp);
+
+            if (temp == 1)
+            {
+                
+                geraRelatorio(nave, qntNaves, totalNavesAtendidas, totalServicosRealizados, valorRecebido , minutosSimulados);
+                
+            } else if (temp == 2){
+
+                geraRelatorioPendentes(nave, qntNaves, minutosSimulados);
+
+            }
+            
+
+            break;
+        case 'x':
+            
+            simula(999, tempoRestanteSimulacao, nave, servicos, qntNaves, nave->totalServicos, totalNavesAtendidas, totalServicosRealizados, valorRecebido, minutosSimulados);
+
+            break;
+        
+        default:
+            break;
+        }
     }
+    
 
     // Liberação da memória
     free(servicos);
     free(tipoNave);
     free(nave);
+    fclose(simulacao);
 
     return 0;
 }
